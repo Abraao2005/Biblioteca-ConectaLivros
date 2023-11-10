@@ -1,10 +1,8 @@
 <?php
 require_once("../funcoes/recuperaAluno.php");
 require_once("../classes/biblioteca.php");
-$biblioteca = new Biblioteca();
-    if($aluno->user->id== null || $aluno->user->userName == null){
-     header("location:../index.php") ;
-    }
+$arr = $aluno->bd->selectBD('livro_aluno','aluno_id',$aluno->user->id);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +12,29 @@ $biblioteca = new Biblioteca();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca ConectaLivros</title>
     <style>
+        .acao {
+            margin-top: 5px;
+            padding: 0.5em;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            align-self: flex-end;
+            display: inline-block;
+            /* Torna o link um bloco em linha para adicionar estilos */
+            border-radius: 4px;
+            /* Cantos arredondados */
+            transition: background-color 0.3s ease;
+            /* Transição suave da cor de fundo */
+            border: 1px solid gray;
+        }
+
+        .acao:hover {
+            background-color: #555;
+            /* Cor de fundo ao passar o mouse */
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -73,63 +94,42 @@ $biblioteca = new Biblioteca();
             text-align: center;
             width: 100%;
         }
-        .acao {
-            margin-top: 5px;
-            padding: 0.5em;
-            background-color: #333;
-            color: white;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            align-self: flex-end;
-            display: inline-block; /* Torna o link um bloco em linha para adicionar estilos */
-            border-radius: 4px; /* Cantos arredondados */
-            transition: background-color 0.3s ease; /* Transição suave da cor de fundo */
-            border: 1px solid gray;
-        }
-
-        .acao:hover {
-            background-color: #555; /* Cor de fundo ao passar o mouse */
-        }
     </style>
 </head>
 
 <body>
 
-    <header>
+<header>
         <h1>Lista de Livros</h1>
         <p>Usuário: <strong><?php echo $aluno->user->userName; ?></strong></p>
-        <a class="acao" href="alunoLivros.php">Meus livros</a>
-        <a class="acao" href="../funcoes/logoff.php">Sair</a>
+        <a class="acao" href="main.php">HomePage</a>
     </header>
 
+
     <section>
-        <h2>Livros Disponíveis</h2>
+        <h2>Livros Adquiridos</h2>
         <p>
-          <?php if(isset($_SESSION["erro"])):?>
-          <?php echo $_SESSION['erro']; unset($_SESSION["erro"])?>
-          <?php endif;?>
-          <?php if(isset($_SESSION["sucess"])):?>
-          <?php echo $_SESSION['sucess']; unset($_SESSION["sucess"])?>
-          <?php endif;?>
+            <?php if(isset($_SESSION["sucessDev"])):?>
+                <?php echo $_SESSION["sucessDev"]; unset($_SESSION["sucessDev"])?>
+            <?php endif;?>
         </p>
         <ul>
-            <?php foreach ($biblioteca->showBooks() as $index => $item) : ?>
-                <?php if ($item["disponivel"] == 1) : ?>
-                    <li>
-                        <strong>Livro: <?php echo $item['livro']; ?> </strong>
-                        <a class="acao-link" href="../funcoes/pegarLivro.php?id=<?php echo $item['id'] ?>">Pegar da Biblioteca</a>
-                        <a class="acao-link esconder" href="devolverLivro/livro-1">Devolver</a>
-                    </li>
-                <?php endif; ?>
-            <?php endforeach; ?>
+            <?php foreach($arr as $item):?>
+            <li>
+                <strong>Livro: 
+                    <?php echo $item['livro']; ?>
+                </strong>
+                <a class="acao-link " href="../funcoes/devolveLivro.php?id_aluno=<?php echo $item['aluno_id']?>&id_biblioteca=<?= $item["biblioteca_id"]?>&id=<?=$item['id']?>">Devolver</a>
+            </li>
+
+            <?php  endforeach;?>
 
 
         </ul>
     </section>
 
     <footer>
-        <p>Seu Rodapé &copy; 2023</p>
+        <p> &copy; 2023</p>
     </footer>
 
 </body>
